@@ -1,40 +1,65 @@
-name: CI - Tests & Documentation
-
 on:
+
   push:
+
     branches:
+
       - main
 
+
+
 permissions:
+
   contents: write
 
+
+
 jobs:
+
   build:
+
     runs-on: ubuntu-latest
 
+
+
     steps:
+
     - name: Checkout repository
-      uses: actions/checkout@v4
+
+      uses: actions/checkout@v2
+
       with:
+
         fetch-depth: 0
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.10'
+
 
     - name: Install Doxygen
+
       run: sudo apt-get install doxygen -y
 
+
+
     - name : Install Dot
+
       run : sudo apt-get install graphviz -y
 
+
+
     - name: Generate Documentation
+
       run: doxygen conf/Doxyfile
-      working-directory: ./main
+
+
 
     - name: Deploy Documentation
+
+    
+
       uses: peaceiris/actions-gh-pages@v3
+
       with:
+
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./main/documentation
+
+        publish_dir: ./documentation

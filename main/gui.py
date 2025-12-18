@@ -5,10 +5,11 @@ import json
 import statistics 
 from functions import init_db, login_or_create, create_session, vote, get_votes
 
+# --- INITIALISATION ET ETAT GLOBAL ---
 conn, cur = init_db()
 players_in_session = [] 
-backlog = []
-session_id = None
+backlog = []            
+session_id = None       
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 class PlanningPokerApp:
@@ -17,10 +18,10 @@ class PlanningPokerApp:
         self.root.title("Planning Poker - M1 Informatique")
         self.root.geometry("850x750")
         
-        # Style général
-        self.bg_color = "#F5F5F5"  # Gris très clair
+        self.bg_color = "#F5F5F5" 
         self.root.configure(bg=self.bg_color)
         
+        # Conteneur principal pour simuler un système de "vues"
         self.main_frame = tk.Frame(self.root, bg=self.bg_color, padx=20, pady=20)
         self.main_frame.pack(expand=True, fill="both")
         
@@ -28,7 +29,27 @@ class PlanningPokerApp:
         self.login_screen()
 
     def clear(self):
+        """Nettoie l'interface avant d'afficher une nouvelle étape."""
         for w in self.main_frame.winfo_children(): w.destroy()
+
+    def save_results_to_json(self, task_title, score, votes_detail):
+        """Sauvegarde les résultats définitifs dans un fichier JSON externe."""
+        filename = "resultats_session.json"
+        new_entry = {
+            "tache": task_title,
+            "resultat_final": score,
+            "details_votes": {u: v for u, v in votes_detail}
+        }
+        
+        data = []
+        if os.path.exists(filename):
+            with open(filename, 'r', encoding='utf-8') as f:
+                try: data = json.load(f)
+                except: data = []
+        
+        data.append(new_entry)
+        with open(filename, 'w', encoding='utf-8') as f:
+            json.dump(data, f, indent=4, ensure_ascii=False)
 
     # --- Étape 1 : Enregistrement des joueurs ---
     def login_screen(self):
@@ -38,44 +59,40 @@ class PlanningPokerApp:
         box = tk.LabelFrame(self.main_frame, text=" Nouveau Joueur ", padx=15, pady=15, bg=self.bg_color)
         box.pack(fill="x", padx=50)
 
+        #--- PSEUDO ---
         tk.Label(box, text="Pseudo:", bg=self.bg_color).grid(row=0, column=0, pady=5, sticky="w")
         ent_name = tk.Entry(box, font=("Arial", 11))
         ent_name.grid(row=0, column=1, padx=10, sticky="ew")
 
+        #--- Choix Rôle ---
         tk.Label(box, text="Rôle:", bg=self.bg_color).grid(row=1, column=0, pady=5, sticky="w")
         self.role_var = tk.StringVar(value="user")
         role_menu = tk.OptionMenu(box, self.role_var, "user", "scrum_master")
         role_menu.grid(row=1, column=1, sticky="w", padx=10)
 
+        #--- Ajout utilisateurs ---
         def add_player():
             name = ent_name.get().strip()
             role = self.role_var.get()
             if not name: return
-
             uid, role_final = login_or_create(cur, conn, name, role)
             players_in_session.append({"id": uid, "name": name, "role": role_final})
-            
-            # Affichage dans la liste avec distinction pour le Scrum Master
-            label_text = f" {name} ({role_final})"
-            self.listbox_players.insert(tk.END, label_text)
+            self.listbox_players.insert(tk.END, f" {name} ({role_final})")
             if role_final == "scrum_master":
-                self.listbox_players.itemconfig(tk.END, fg="#D35400") # Orange sombre
-            
+                self.listbox_players.itemconfig(tk.END, fg="#D35400") 
             ent_name.delete(0, tk.END)
 
-        tk.Button(box, text="Ajouter", command=add_player, bg="#AED6F1", width=10).grid(row=2, column=1, pady=10, sticky="e")
-
-        self.listbox_players = tk.Listbox(self.main_frame, width=50, height=8, font=("Arial", 10))
+        tk.Button(box, text="Ajouter", command=add_player, bg="#AED6F1").grid(row=2, column=1, pady=10, sticky="e")
+        self.listbox_players = tk.Listbox(self.main_frame, width=50, height=8)
         self.listbox_players.pack(pady=20)
-
-        tk.Button(self.main_frame, text="Suivant >>", command=self.session_creation_screen, bg="#ABEBC6", font=("Arial", 10, "bold"), padx=20).pack()
+        tk.Button(self.main_frame, text="Suivant >>", command=self.session_creation_screen, bg="#ABEBC6", font=("Arial", 10, "bold")).pack()
 
     # --- Étape 2 : Création de Session ---
     def session_creation_screen(self):
         self.clear()
         tk.Label(self.main_frame, text="Configuration de la Session", font=("Arial", 16, "bold"), bg=self.bg_color).pack(pady=20)
         
-        tk.Label(self.main_frame, text="Nom du projet / session:", bg=self.bg_color).pack()
+        tk.Label(self.main_frame, text="Nom de la session:", bg=self.bg_color).pack()
         ent_sname = tk.Entry(self.main_frame, width=40)
         ent_sname.pack(pady=5)
 
@@ -84,38 +101,38 @@ class PlanningPokerApp:
         for m in ["Strict", "Moyenne", "Médiane"]:
             tk.Radiobutton(mode_box, text=m, variable=self.mode_vote, value=m, bg=self.bg_color).pack(side="left", padx=10)
 
+        #--- Charger fichier backlog.json ---
         def load_json():
             global backlog
             path = filedialog.askopenfilename(filetypes=[("JSON files", "*.json")])
             if path:
                 with open(path, 'r', encoding='utf-8') as f:
                     backlog = json.load(f).get("issues", [])
-                messagebox.showinfo("Succès", f"{len(backlog)} tâches importées.")
+                messagebox.showinfo("Succès", f"{len(backlog)} tâches chargées.")
 
-        tk.Button(self.main_frame, text="Charger le Backlog JSON", command=load_json, bg="#D5DBDB").pack(pady=10)
+        tk.Button(self.main_frame, text="Charger Backlog JSON", command=load_json, bg="#D5DBDB").pack(pady=10)
 
         def start():
             global session_id
             sm = next((p for p in players_in_session if p['role'] == 'scrum_master'), None)
             if not sm or not ent_sname.get() or not backlog:
-                messagebox.showwarning("Erreur", "Vérifiez : Scrum Master présent, Nom session rempli et Backlog chargé.")
+                messagebox.showwarning("Erreur", "Données manquantes (SM, Nom ou Backlog).")
                 return
             session_id = create_session(cur, conn, ent_sname.get(), self.mode_vote.get(), sm['id'])
             self.turn_by_turn_vote(0, 0)
 
-        tk.Button(self.main_frame, text="Lancer le Vote", command=start, bg="#2E86C1", fg="white", font=("Arial", 11, "bold"), padx=30, pady=5).pack(pady=20)
+        tk.Button(self.main_frame, text="Lancer le Vote", command=start, bg="#2E86C1", fg="white", font=("Arial", 11, "bold")).pack(pady=20)
 
     # --- Étape 3 : Vote Tour par Tour ---
     def turn_by_turn_vote(self, p_idx, t_idx):
         self.clear()
         if t_idx >= len(backlog):
-            messagebox.showinfo("Terminé", "Fin du backlog.")
+            messagebox.showinfo("Terminé", "Session terminée ! Résultats sauvegardés.")
             return self.login_screen()
 
         current_player = players_in_session[p_idx]
         current_task = backlog[t_idx]
 
-        # Bandeau de la tâche
         banner = tk.Frame(self.main_frame, bg="#34495E", pady=10)
         banner.pack(fill="x", pady=(0, 20))
         tk.Label(banner, text=f"Tâche : {current_task['title']}", fg="white", bg="#34495E", font=("Arial", 12, "bold")).pack()
@@ -126,17 +143,16 @@ class PlanningPokerApp:
         card_frame.pack(pady=10)
 
         values = [0, 1, 2, 3, 5, 8, 13, 20, 40, 100, "?", "Cafe"]
-        self.card_imgs = {} # Pour garder les images en mémoire
+        self.card_imgs = {} 
 
         for i, v in enumerate(values):
             path = os.path.join(BASE_DIR, "cartes", f"cartes_{v}.png")
             if os.path.exists(path):
                 img = tk.PhotoImage(file=path).subsample(6, 6)
                 self.card_imgs[v] = img
-                btn = tk.Button(card_frame, image=img, command=lambda val=v: self.next_vote(p_idx, t_idx, val), borderwidth=1)
+                btn = tk.Button(card_frame, image=img, command=lambda val=v: self.next_vote(p_idx, t_idx, val))
             else:
                 btn = tk.Button(card_frame, text=str(v), width=8, height=4, font=("Arial", 10, "bold"), command=lambda val=v: self.next_vote(p_idx, t_idx, val))
-            
             btn.grid(row=i//4, column=i%4, padx=8, pady=8)
 
     def next_vote(self, p_idx, t_idx, val):
@@ -146,15 +162,13 @@ class PlanningPokerApp:
         else:
             self.turn_by_turn_vote(p_idx + 1, t_idx)
 
-    # --- Étape 4 : Résultats ---
+    # --- Étape 4 : Résultats & Sauvegarde ---
     def show_results(self, t_idx):
         self.clear()
         tk.Label(self.main_frame, text="Résultats du tour", font=("Arial", 16, "bold"), bg=self.bg_color).pack(pady=20)
         
         votes = get_votes(cur, session_id)
         numeric_votes = []
-        
-        # Zone d'affichage des votes
         res_list = tk.Frame(self.main_frame, bg="white", padx=20, pady=20, relief="sunken", borderwidth=1)
         res_list.pack(pady=10)
 
@@ -163,21 +177,20 @@ class PlanningPokerApp:
             try: numeric_votes.append(int(v))
             except: continue
 
-        # Logique de calcul selon le mode
         mode = self.mode_vote.get()
         final_val = "Inconnu"
         if numeric_votes:
             if mode == "Moyenne": final_val = f"{sum(numeric_votes)/len(numeric_votes):.2f}"
             elif mode == "Médiane": final_val = statistics.median(numeric_votes)
-            else: final_val = numeric_votes[0] if len(set(numeric_votes)) == 1 else "Débat requis (non unanime)"
+            else: final_val = numeric_votes[0] if len(set(numeric_votes)) == 1 else "Débat requis"
 
-        # Affichage du résultat final mis en évidence
         score_box = tk.Frame(self.main_frame, bg="#D4E6F1", padx=20, pady=10)
         score_box.pack(pady=20)
         tk.Label(score_box, text=f"Résultat Final ({mode}) : {final_val}", font=("Arial", 13, "bold"), bg="#D4E6F1", fg="#1B4F72").pack()
 
         def go_next():
-            # Reset des votes pour la prochaine tâche
+            # Sauvegarde automatique dans le fichier JSON avant de passer à la suite
+            self.save_results_to_json(backlog[t_idx]['title'], final_val, votes)
             cur.execute("DELETE FROM votes WHERE session_id=?", (session_id,))
             conn.commit()
             self.turn_by_turn_vote(0, t_idx + 1)

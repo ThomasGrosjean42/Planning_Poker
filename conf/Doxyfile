@@ -1,7 +1,7 @@
 # Doxyfile for MyPythonProject
 
 # Project name
-PROJECT_NAME           = "ExampleGenerationDoxyPython"
+PROJECT_NAME           = "Génération Doxyfile"
 
 # Project version
 PROJECT_NUMBER         = 1.0

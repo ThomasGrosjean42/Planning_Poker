@@ -1,0 +1,16 @@
+{
+  "issues": [
+    {
+      "title": "Creation de la base de donnees"
+    },
+    {
+      "title": "Design de l'interface graphique"
+    },
+    {
+      "title": "Systeme de vote tour par tour"
+    },
+    {
+      "title": "Exportation des resultats finaux"
+    }
+  ]
+}

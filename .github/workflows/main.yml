@@ -18,6 +18,14 @@ jobs:
       with:
         fetch-depth: 0
 
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.10'
+
+    - name: Run Unit Tests
+      run: python -m unittest unit_test.py
+
     - name: Install Doxygen
       run: sudo apt-get install doxygen -y
 
@@ -28,7 +36,6 @@ jobs:
       run: doxygen conf/Doxyfile
 
     - name: Deploy Documentation
-    
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}

@@ -18,28 +18,23 @@ jobs:
       with:
         fetch-depth: 0
 
-    # 1. Configuration de l'environnement Python
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.10'
 
-    # 2. Exécution des tests unitaires (dans le dossier main)
     - name: Run Unit Tests
       working-directory: ./main
       run: python -m unittest unit_test.py
 
-    # 3. Installation des outils de documentation
     - name: Install Doxygen & Graphviz
       run: |
         sudo apt-get update
         sudo apt-get install doxygen graphviz -y
 
-    # 4. Génération de la documentation (le Doxyfile est dans /conf)
     - name: Generate Documentation
       run: doxygen conf/Doxyfile
 
-    # 5. Déploiement sur GitHub Pages (le dossier de sortie doit correspondre à ton Doxyfile)
     - name: Deploy Documentation
       uses: peaceiris/actions-gh-pages@v3
       with:

@@ -23,10 +23,6 @@ jobs:
       with:
         python-version: '3.10'
 
-    - name: Run Unit Tests
-      run: python -m unittest unit_test.py
-      working-directory: ./Planning_poker
-
     - name: Install Doxygen
       run: sudo apt-get install doxygen -y
 

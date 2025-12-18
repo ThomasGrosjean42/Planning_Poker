@@ -1,0 +1,16 @@
+<map id="gui.PlanningPokerApp.save_results_to_json" name="gui.PlanningPokerApp.save_results_to_json">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,142,204,182"/>
+<area shape="poly" id="edge4_Node000001_Node000001" title=" " alt="" coords="56,142,53,132,61,123,78,117,105,115,135,118,151,125,149,130,134,123,105,121,79,123,64,127,58,133,61,141"/>
+<area shape="rect" id="Node000002" href="$classgui_1_1PlanningPokerApp.html#a255cb5bb65c06aa7e37a3046e1504a54" title=" " alt="" coords="269,5,467,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="123,140,177,90,212,63,251,41,272,32,274,37,253,46,215,68,180,94,127,144"/>
+<area shape="rect" id="Node000003" href="$classgui_1_1PlanningPokerApp.html#a35344b7b3892516d5e0f51da83d045cf" title=" " alt="" coords="269,55,467,95"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="155,139,251,105,277,97,279,102,253,110,157,144"/>
+<area shape="rect" id="Node000004" href="$classgui_1_1PlanningPokerApp.html#a35b0caf792e0a96c2d02852925891623" title=" " alt="" coords="252,120,484,145"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="204,148,240,144,240,150,204,154"/>
+<area shape="rect" id="Node000005" href="$classgui_1_1PlanningPokerApp.html#a453d18bf16f991c2b25691bbab0a732f" title=" " alt="" coords="260,170,476,210"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="204,170,247,174,246,180,204,175"/>
+<area shape="rect" id="Node000006" href="$classgui_1_1PlanningPokerApp.html#ada122ddf2189fe122bd6818de26185e0" title=" " alt="" coords="267,234,469,274"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="152,180,253,219,277,227,276,233,251,225,150,185"/>
+<area shape="rect" id="Node000007" href="$classgui_1_1PlanningPokerApp.html#a524fe2e0e1097c21f5891e36484bf6d4" title=" " alt="" coords="271,298,465,338"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="126,180,180,232,215,260,253,284,268,291,265,295,251,288,212,264,177,236,122,184"/>
+</map>

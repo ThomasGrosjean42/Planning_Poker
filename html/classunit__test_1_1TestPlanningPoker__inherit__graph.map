@@ -1,5 +1,5 @@
 <map id="unit_test.TestPlanningPoker" name="unit_test.TestPlanningPoker">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,119,199,319"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,119,199,284"/>
 <area shape="rect" id="Node000002" title=" " alt="" coords="37,5,167,71"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="105,84,105,119,99,119,99,84"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="105,84,105,118,99,118,99,84"/>
 </map>
